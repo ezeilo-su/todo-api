@@ -1,14 +1,16 @@
 import cors from 'cors';
 import express, { json, urlencoded } from 'express';
 
-import { startServer } from './server';
+import { bindRoutes } from './routes';
 
 const app = express();
-
-const server = startServer(app);
 
 app.use(cors());
 app.use(json());
 app.use(urlencoded({ extended: true }));
 
-export default server;
+bindRoutes(app);
+
+// other middleware
+
+export { app };

@@ -2,11 +2,11 @@
   "name": "todo-api",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/app.ts",
+  "main": "./dist/index.ts",
   "scripts": {
-    "dev": "ts-node ./src/app.ts",
+    "dev": "ts-node ./src/index.ts",
     "build": "rm -rf ./dist && npx tsc",
-    "start": "node ./dist/app.js",
+    "start": "node ./dist/index.js",
     "test": "npm test",
     "prettier": "prettier --config .prettierrc './**/*.ts' --write"
   },
