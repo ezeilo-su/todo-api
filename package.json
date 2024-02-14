@@ -7,8 +7,12 @@
     "dev": "ts-node ./src/index.ts",
     "build": "rm -rf ./dist && npx tsc",
     "start": "node ./dist/index.js",
-    "test": "npm test",
+    "test": "jest --no-cache",
     "prettier": "prettier --config .prettierrc './**/*.ts' --write"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node"
   },
   "repository": {
     "type": "git",
@@ -31,9 +35,15 @@
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.12",
+    "@types/supertest": "^6.0.2",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
+    "jest": "^29.7.0",
+    "jest-mock-extended": "^3.0.5",
     "prettier": "^3.2.5",
+    "supertest": "^6.3.4",
+    "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }
