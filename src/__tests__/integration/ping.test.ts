@@ -10,7 +10,7 @@ describe('Test Server Endpoints', () => {
     expect(response.body).toEqual(
       expect.objectContaining({
         data: {
-          version: expect.stringMatching(/[a-zA-Z0-9]+/)
+          version: expect.stringMatching(/^[a-zA-Z0-9]+$/)
         }
       })
     );
