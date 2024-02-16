@@ -10,7 +10,9 @@ const pingController: RequestHandler = (_req, res) => {
     status: true,
     message: 'Welcome to Todo API',
     data: {
-      version: commitHash
+      meta: {
+        version: commitHash
+      }
     }
   });
 };
