@@ -3,8 +3,9 @@ import morgan from 'morgan';
 import express, { json, urlencoded } from 'express';
 
 import { bindRoutes } from './routes';
-import { log } from './logger/logger';
+import { logger } from './logger/logger';
 import { logStream } from './logger/stream';
+import { config } from './config';
 
 const app = express();
 
@@ -12,9 +13,8 @@ app.use(cors());
 app.use(json());
 app.use(urlencoded({ extended: true }));
 
-if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'staging') {
+if (config.appEnv !== 'production' && config.appEnv !== 'staging') {
   app.use(morgan('tiny', { stream: logStream }));
-  log.info('Logging enabled');
 }
 
 bindRoutes(app);
