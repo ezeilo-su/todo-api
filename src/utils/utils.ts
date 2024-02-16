@@ -7,6 +7,7 @@ export const getCommitHash = (): string => {
     return execSync('git rev-parse --short HEAD').toString().trim();
   }
 
-  return process.env.HEROKU_SLUG_COMMIT as string;
+  // return process.env.HEROKU_SLUG_COMMIT as string;
+  return (process.env.HEROKU_SLUG_DESCRIPTION as string).split(' ')[1]
   // return process.env.COMMIT_SHA as string; - Update accordingly for GitHub and GitLab
 };
