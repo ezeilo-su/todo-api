@@ -4,7 +4,6 @@ import express, { json, urlencoded } from 'express';
 
 import { bindRoutes } from './routes';
 import { logStream } from './logger/stream';
-import { config } from './config';
 
 const app = express();
 
@@ -13,8 +12,6 @@ app.use(json());
 app.use(urlencoded({ extended: true }));
 
 app.use(morgan('tiny', { stream: logStream }));
-if (config.appEnv !== 'production' && config.appEnv !== 'staging') {
-}
 
 bindRoutes(app);
 
