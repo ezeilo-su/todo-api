@@ -8,4 +8,5 @@ export const getCommitHash = (): string => {
   }
 
   return process.env.HEROKU_SLUG_COMMIT as string;
+  // return process.env.COMMIT_SHA as string; - Update accordingly for GitHub and GitLab
 };
