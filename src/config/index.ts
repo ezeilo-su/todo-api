@@ -20,7 +20,7 @@ export const getJSONEnv = (key: string) => {
 
 const configObject = {
   appEnv: process.env.APP_ENV,
-  serverPort: Number(process.env.SERVER_PORT),
+  serverPort: Number(process.env.SERVER_PORT || process.env.PORT),
   lastCommitHash: getCommitHash()
 };
 
