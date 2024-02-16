@@ -4,7 +4,6 @@ import { config } from '../config';
 
 const pingController: RequestHandler = (_req, res) => {
   const commitHash = config.lastCommitHash;
-  console.debug(`Latest commit hash: ${commitHash}`);
 
   res.status(httpStatus.OK).send({
     status: true,

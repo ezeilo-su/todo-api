@@ -5,7 +5,6 @@ import { Config } from '../types/global';
 import { getCommitHash } from '../utils/utils';
 import { configSchema } from '../types/validation-schema';
 import { logger } from '../logger/logger';
-import { ZodError } from 'zod';
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
@@ -20,29 +19,24 @@ export const getJSONEnv = (key: string) => {
 
 const configObject = {
   appEnv: process.env.APP_ENV,
-  serverPort: Number(process.env.PORT || process.env.SERVER_PORT),
-  lastCommitHash: getCommitHash()
+  serverPort: process.env.PORT || process.env.SERVER_PORT,
+  lastCommitHash: getCommitHash(),
+  logLevel: process.env.LOG_LEVEL
 };
 
 let cache: Config | undefined;
 function validateEnvs() {
-  try {
-    if (!cache) {
-      cache = configSchema.parse(configObject);
-    }
-  } catch (error) {
-    if (error instanceof ZodError) {
-      error.errors.forEach((validationError) => {
-        logger.error(validationError.message);
-        logger.error(validationError.path.join('.'));
-      });
-    }
-    throw 'ENV Error!';
+  if (cache) return cache;
+  const result = configSchema.safeParse(configObject);
+  if (result.success) {
+    cache = result.data;
+    return cache;
   }
-
-  return cache;
+  result.error.errors.forEach((validationError) => {
+    logger.error(validationError.message);
+    logger.error(validationError.path.join('.'));
+  });
+  throw 'Error in the ENV';
 }
 
-const config = cache || validateEnvs();
-
-export { config };
+export const config = validateEnvs();

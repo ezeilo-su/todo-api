@@ -1,8 +1,9 @@
 import winston from 'winston';
+import { config } from '../config';
 
 const logger = winston.createLogger({
   // defaultMeta: { service: 'todo-api' },
-  level: 'debug',
+  level: process.env.LOG_LEVEL,
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.printf((info) => {
