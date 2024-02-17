@@ -4,7 +4,7 @@ import * as path from 'path';
 import { Config } from '../types/global';
 import { getCommitHash } from '../utils/utils';
 import { configSchema } from '../types/validation-schema';
-import { logger } from '../logger/logger';
+// import { logger } from '../logger/logger';
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
@@ -32,11 +32,11 @@ function validateEnvs() {
     cache = result.data;
     return cache;
   }
-  result.error.errors.forEach((validationError) => {
-    logger.error(validationError.message);
-    logger.error(validationError.path.join('.'));
+  const errMsg = result.error.errors.map((validationError) => {
+    return `${validationError.path.join('.')}\t${validationError.message}`;
   });
-  throw 'Error in the ENV';
+
+  throw new Error(errMsg.join('\n'));
 }
 
 export const config = validateEnvs();

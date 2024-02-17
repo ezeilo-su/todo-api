@@ -3,7 +3,7 @@ import { config } from '../config';
 
 const logger = winston.createLogger({
   // defaultMeta: { service: 'todo-api' },
-  level: process.env.LOG_LEVEL,
+  level: config.logLevel,
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.printf((info) => {
