@@ -1,33 +1,39 @@
+import { z } from 'zod';
 import dotenv from 'dotenv';
-import * as path from 'path';
-
-import { Config } from '../types/global';
 import { getCommitHash } from '../utils/utils';
-import { configSchema } from '../types/validation-schema';
-// import { logger } from '../logger/logger';
+import { ConfigValidationSchema, DBConfigValidationSchema } from '../validation-schema';
 
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config();
 
-export const getJSONEnv = (key: string) => {
-  const value = process.env[key];
-  if (!value) {
-    console.error(`undefined ${key} in ENV`);
-    throw new Error(`${key} must be defined in the ENV`);
-  }
-  return JSON.parse(value);
-};
+export enum AppEnv {
+  test = 'test',
+  staging = 'staging',
+  production = 'production',
+  development = 'development'
+}
+
+export enum LogLevel {
+  debug = 'debug',
+  error = 'error',
+  combined = 'combined'
+}
+
+export type ConfigSchema = z.infer<typeof ConfigValidationSchema>;
+export type DBConfigSchema = z.infer<typeof DBConfigValidationSchema>;
 
 const configObject = {
   appEnv: process.env.APP_ENV,
   serverPort: process.env.PORT || process.env.SERVER_PORT,
   lastCommitHash: getCommitHash(),
-  logLevel: process.env.LOG_LEVEL
+  logLevel: process.env.LOG_LEVEL,
+  dbConfig: process.env.DB_CONFIG
 };
 
-let cache: Config | undefined;
+let cache: ConfigSchema | undefined;
+
 function validateEnvs() {
   if (cache) return cache;
-  const result = configSchema.safeParse(configObject);
+  const result = ConfigValidationSchema.safeParse(configObject);
   if (result.success) {
     cache = result.data;
     return cache;
