@@ -3,6 +3,11 @@ on: [push]
 jobs:
   check-bats-version:
     runs-on: ubuntu-latest
+    env:
+      APP_ENV: ${{ secrets.APP_ENV }}
+      SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+      DB_CONFIG: ${{ secrets.DB_CONFIG }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
