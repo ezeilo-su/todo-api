@@ -8,7 +8,7 @@ import {
 } from '../../../../src/repositories/task/create';
 
 describe('create task => TaskRepository.create', () => {
-  it('should save a new task', async () => {
+  it('should save a new task with the correct fields', async () => {
     const taskRepo = new TaskRepository(taskSchema);
     const taskDto: CreateTaskDto = {
       title: 'Learn Go',
