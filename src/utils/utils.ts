@@ -8,3 +8,5 @@ export const getCommitHash = (): string => {
 
   return process.env.HEROKU_SLUG_COMMIT as string; //  Full commit hash
 };
+
+export const generateId = () => crypto.randomUUID();

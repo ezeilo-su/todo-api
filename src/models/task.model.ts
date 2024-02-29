@@ -1,5 +1,6 @@
 import { Schema } from 'mongoose';
 import { TaskPriorityMapping } from '../repositories/task/create';
+import { generateId } from '../utils/utils';
 
 interface NotificationSubscriptionSchema {
   reminder: boolean;
@@ -43,7 +44,7 @@ const taskSchema = new Schema<TaskModel>(
   {
     id: {
       type: String,
-      default: () => crypto.randomUUID(),
+      default: () => generateId(),
       required: true
     },
     title: {
