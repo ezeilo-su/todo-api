@@ -1,19 +1,17 @@
 import { z } from 'zod';
-// import { LogLevel } from '../config';
-import { TaskPriority } from '../repositories/task/create';
+import { DateTime } from 'luxon';
 
-const portRegex = /^(?:[1-9]\d{0,3}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$/;
+import { TaskPriority } from '../repositories/task/create';
+import { DBConfigValidationSchema } from '../config';
+
+const PORT_REGEX = /^(?:[1-9]\d{0,3}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$/;
 const validatePort = (port: string) => {
-  if (!portRegex.test(port)) {
+  if (!PORT_REGEX.test(port)) {
     throw new Error('Invalid PORT number');
   }
 
   return Number(port);
 };
-
-export const DBConfigValidationSchema = z.object({
-  url: z.string()
-});
 
 export const ConfigValidationSchema = z.object({
   appEnv: z.string(),
@@ -23,6 +21,11 @@ export const ConfigValidationSchema = z.object({
   logLevel: z.string()
 });
 
+export enum NotificationSubscription {
+  reminder = 'reminder',
+  taskStarted = 'taskStarted',
+  taskCompleted = 'taskCompleted'
+}
 export const NotificationSubscriptionValidationSchema = z
   .object({
     reminder: z.boolean().optional(),
@@ -39,12 +42,16 @@ export const NotificationSubscriptionValidationSchema = z
         'At least one field in [reminder, taskStarted, taskCompleted] must be true if notificationSubscription is present'
     }
   );
+const optionalDateValidationSchema = z
+  .string()
+  .transform((val) => DateTime.fromISO(val))
+  .optional();
 
 export const TaskValidationSchema = z.object({
   title: z.string().min(3).max(64),
   description: z.string().max(500),
-  startTime: z.date().optional(),
-  completionTime: z.date().optional(),
+  startTime: optionalDateValidationSchema,
+  completionTime: optionalDateValidationSchema,
   priorityLevel: z.nativeEnum(TaskPriority).optional(),
   notificationSubscription: NotificationSubscriptionValidationSchema.optional()
 });

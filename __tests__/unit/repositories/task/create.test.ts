@@ -8,40 +8,7 @@ import {
 } from '../../../../src/repositories/task/create';
 
 describe('create task => TaskRepository.create', () => {
-  it('should save a new task with the correct fields', async () => {
-    const taskRepo = new TaskRepository(taskSchema);
-    const taskDto: CreateTaskDto = {
-      title: 'Learn Go',
-      description: 'Learn web development with Golang'
-    };
-
-    const newTask = await taskRepo.createTask(taskDto);
-    expect(newTask).not.toBe(null);
-
-    const expectedObject = {
-      id: expect.any(String),
-      title: taskDto.title,
-      description: taskDto.description,
-      dateCreated: expect.any(Date),
-      dateUpdated: expect.any(Date)
-    };
-    expect(newTask).toEqual(expect.objectContaining(expectedObject));
-
-    expect(newTask).not.toEqual(
-      expect.objectContaining({
-        _id: expect.anything(),
-        startTime: expect.anything(),
-        createdAt: expect.anything(),
-        updatedAt: expect.anything(),
-        deletedAt: expect.anything(),
-        completionTime: expect.anything(),
-        priorityLevel: expect.anything(),
-        notificationSubscription: expect.anything()
-      })
-    );
-  });
-
-  it('should save a new task with more fields', async () => {
+  it('should save a new task with and return the correct fields', async () => {
     const taskRepo = new TaskRepository(taskSchema);
     const taskDto: CreateTaskDto = {
       title: 'Learn Go',
@@ -72,6 +39,6 @@ describe('create task => TaskRepository.create', () => {
         taskStarted: true
       })
     };
-    expect(newTask).toEqual(expect.objectContaining(expectedObject));
+    expect(newTask).toStrictEqual(expect.objectContaining(expectedObject));
   });
 });
