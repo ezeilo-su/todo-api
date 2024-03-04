@@ -1,18 +1,43 @@
 name: tod-api
 on: [push]
+
 jobs:
-  check-bats-version:
+  build:
     runs-on: ubuntu-latest
     env:
-      APP_ENV: ${{ vars.APP_ENV }}
-      SERVER_PORT: ${{ vars.SERVER_PORT }}
-      LOG_LEVEL: ${{ vars.LOG_LEVEL }}
-      DB_CONFIG: ${{ vars.DB_CONFIG }}
+      APP_ENV: ${{ secrets.APP_ENV }}
+      SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+      DB_CONFIG: ${{ secrets.DB_CONFIG }}
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '>=18.19.2'
-      - run: npm install
-      - run: npm test
-      - run: npm build
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+  test:
+    runs-on: ubuntu-latest
+    env:
+      APP_ENV: ${{ secrets.APP_ENV }}
+      SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+      DB_CONFIG: ${{ secrets.DB_CONFIG }}
+
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '>=18.19.2'
+
+      - name: Run Tests
+        run: npm test
