@@ -19,25 +19,7 @@ jobs:
         with:
           node-version: '>=18.19.2'
 
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Build
-        run: npm run build
-
-  test:
-    runs-on: ubuntu-latest
-    env:
-      APP_ENV: ${{ secrets.APP_ENV }}
-      SERVER_PORT: ${{ secrets.SERVER_PORT }}
-      LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
-      DB_CONFIG: ${{ secrets.DB_CONFIG }}
-
-    steps:
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '>=18.19.2'
-
-      - name: Run Tests
-        run: npm test
+      - run: npm install
+      - run: npm build
+      - run: npm test
+        
