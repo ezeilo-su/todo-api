@@ -6,34 +6,32 @@ export interface BadIssues {
 }
 [];
 
-export class AppError extends Error {
-  constructor(message: string) {
-    super(message);
-  }
-
-  toJSON() {}
-
-  toString() {}
-}
-
 interface ValidationIssue {
   path: string;
   field: string;
   message: string;
 }
 
-export class ValidationError extends AppError {
-  validationIssues: ValidationIssue[];
+interface Stringifiable<T> {
+  toJSON(): T;
+  toString(): string;
+}
 
+export class AppError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
+}
+
+export class ValidationError extends AppError implements Stringifiable<{}> {
   constructor(
     private issues: ZodIssue[],
     private path: string
   ) {
     super(`Invalid request ${path} param(s)`);
-    this.validationIssues = this.serializeIssues();
   }
 
-  private serializeIssues(): ValidationIssue[] {
+  toJSON(): ValidationIssue[] {
     return Object.values(this.issues).reduce((acc, cur) => {
       acc.push({
         path: this.path,
