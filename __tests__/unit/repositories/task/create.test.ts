@@ -23,7 +23,10 @@ describe('create task => TaskRepository.create', () => {
     };
 
     const newTask = await taskRepo.createTask(taskDto);
-    expect(newTask).not.toBe(null);
+    expect(newTask.kind).toEqual('ok');
+    if (newTask.kind === 'ok') {
+      expect(newTask).not.toBe(null);
+    }
 
     const expectedObject = {
       id: expect.any(String),
@@ -39,6 +42,9 @@ describe('create task => TaskRepository.create', () => {
         taskStarted: true
       })
     };
-    expect(newTask).toStrictEqual(expect.objectContaining(expectedObject));
+
+    if (newTask.kind === 'ok') {
+      expect(newTask.data).toStrictEqual(expect.objectContaining(expectedObject));
+    }
   });
 });

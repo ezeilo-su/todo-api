@@ -1,6 +1,6 @@
 import { Model, Schema, model } from 'mongoose';
 import { TaskModel } from '../../models/task.model';
-import { NotificationSubscriptionSchema } from '../../validation-schema';
+import { NotificationSubscriptionSchema } from '../../controllers/v1/task/create.controller';
 
 export interface Task {
   id: string;
@@ -41,6 +41,18 @@ export interface CreateTaskDto {
   notificationSubscription?: NotificationSubscriptionSchema;
 }
 
+interface Err {
+  kind: 'error';
+  err: Error;
+}
+
+interface Ok {
+  kind: 'ok';
+  data: Task;
+}
+
+type Result = Err | Ok;
+
 export class TaskRepository {
   private readonly taskModel: Model<TaskModel>;
 
@@ -48,19 +60,29 @@ export class TaskRepository {
     this.taskModel = model<TaskModel>('Task', taskSchema);
   }
 
-  async createTask(data: CreateTaskDto): Promise<Task> {
-    const { _id, __v, createdAt, updatedAt, priorityLevel, ...newTask } = (
-      await this.taskModel.create({
-        ...data,
-        ...(data.priorityLevel && { priorityLevel: TaskPriorityMapping[data.priorityLevel] })
-      })
-    ).toObject();
+  async createTask(data: CreateTaskDto): Promise<Result> {
+    try {
+      const { _id, __v, createdAt, updatedAt, priorityLevel, ...newTask } = (
+        await this.taskModel.create({
+          ...data,
+          ...(data.priorityLevel && { priorityLevel: TaskPriorityMapping[data.priorityLevel] })
+        })
+      ).toObject();
 
-    return {
-      ...newTask,
-      dateCreated: createdAt,
-      dateUpdated: updatedAt,
-      ...(priorityLevel && { priorityLevel: TaskPriorityReverseMapping[priorityLevel] })
-    };
+      return {
+        kind: 'ok',
+        data: {
+          ...newTask,
+          dateCreated: createdAt,
+          dateUpdated: updatedAt,
+          ...(priorityLevel && { priorityLevel: TaskPriorityReverseMapping[priorityLevel] })
+        }
+      };
+    } catch (error) {
+      return {
+        kind: 'error',
+        err: error as Error
+      };
+    }
   }
 }

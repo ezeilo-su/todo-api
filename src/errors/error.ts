@@ -1,3 +1,4 @@
+import { MongooseError } from 'mongoose';
 import { ZodIssue } from 'zod';
 
 export interface BadIssue {
@@ -19,7 +20,7 @@ export class AppError extends Error {
   }
 }
 
-export class RequestValidationError extends AppError implements Stringifiable<{}> {
+export class RequestValidationError extends AppError implements Stringifiable<ValidationIssues> {
   constructor(
     private path: string,
     private issues: ZodIssue[]
@@ -40,5 +41,11 @@ export class RequestValidationError extends AppError implements Stringifiable<{}
       });
       return acc;
     }, [] as ValidationIssues);
+  }
+}
+
+export class DatabaseError extends MongooseError {
+  constructor(message: string) {
+    super(message);
   }
 }
