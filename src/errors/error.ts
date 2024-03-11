@@ -35,7 +35,7 @@ export class ValidationError extends AppError implements Stringifiable<{}> {
     return Object.values(this.issues).reduce((acc, cur) => {
       acc.push({
         path: this.path,
-        field: cur.path.join('.'),
+        field: cur.path.length > 1 ? `${cur.path[0]}[${cur.path[1]}]` : String(cur.path[0]),
         message: cur.message
       });
       return acc;
