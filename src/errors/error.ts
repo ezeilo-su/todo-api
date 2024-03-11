@@ -1,16 +1,12 @@
 import { ZodIssue } from 'zod';
 
-export interface BadIssues {
-  field: string;
-  message: string;
-}
-[];
-
-interface ValidationIssue {
+export interface BadIssue {
   path: string;
   field: string;
   message: string;
 }
+
+export type ValidationIssues = BadIssue[];
 
 interface Stringifiable<T> {
   toJSON(): T;
@@ -23,15 +19,19 @@ export class AppError extends Error {
   }
 }
 
-export class ValidationError extends AppError implements Stringifiable<{}> {
+export class RequestValidationError extends AppError implements Stringifiable<{}> {
   constructor(
-    private issues: ZodIssue[],
-    private path: string
+    private path: string,
+    private issues: ZodIssue[]
   ) {
     super(`Invalid request ${path} param(s)`);
   }
 
-  toJSON(): ValidationIssue[] {
+  toString(): string {
+    return this.message;
+  }
+
+  toJSON(): ValidationIssues {
     return Object.values(this.issues).reduce((acc, cur) => {
       acc.push({
         path: this.path,
@@ -39,6 +39,6 @@ export class ValidationError extends AppError implements Stringifiable<{}> {
         message: cur.message
       });
       return acc;
-    }, [] as ValidationIssue[]);
+    }, [] as ValidationIssues);
   }
 }
