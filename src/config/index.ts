@@ -19,7 +19,14 @@ const validatePort = (port: string) => {
 
 export const ConfigValidationSchema = z.object({
   appEnv: z.string(),
-  dbConfig: z.string().transform((val) => DBConfigValidationSchema.safeParse(JSON.parse(val))),
+  dbConfig: z.string().transform((val) => {
+    const result = DBConfigValidationSchema.safeParse(JSON.parse(val));
+    if (!result.success) {
+      throw 'invalid DB configs';
+    }
+
+    return result.data;
+  }),
   serverPort: z.string().transform((port) => validatePort(port)),
   lastCommitHash: z.string(),
   logLevel: z.string()

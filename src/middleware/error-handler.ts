@@ -18,7 +18,7 @@ interface ServerErrorRes {
 
 type ErrRes = ReqValidationErrorRes | ServerErrorRes;
 
-export const handleError: ErrorRequestHandler<unknown, ErrRes> = (err, _req, res, _next) => {
+export const errorHandler: ErrorRequestHandler<unknown, ErrRes> = (err, _req, res, _next) => {
   try {
     switch (true) {
       case err instanceof RequestValidationError:

@@ -4,7 +4,7 @@ import httpStatus from 'http-status';
 import { app } from '../../src/app';
 
 describe('Test Server Endpoints', () => {
-  test('GET /ping endpoint returns status code 200', async () => {
+  it('GET /ping endpoint returns status code 200', async () => {
     const response = await request(app).get('/api/ping');
     expect(response.status).toBe(httpStatus.OK);
     expect(response.body).toEqual(
