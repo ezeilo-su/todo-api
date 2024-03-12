@@ -25,7 +25,9 @@ describe('POST /v1/task', () => {
     const body = {
       title: 2,
       description: 345,
-      startTime: 'Bad date string'
+      notificationSubscription: {},
+      startTime: DateTime.utc().minus({ days: 1 }).toISO(),
+      completionTime: DateTime.utc().minus({ days: 3 }).toISO()
     };
     const response = await request.post('/api/v1/task').send(body);
 
@@ -43,7 +45,8 @@ describe('POST /v1/task', () => {
     const body = {
       title: 'Sample Task',
       description: 'Test if task is created',
-      startTime: DateTime.utc().plus({ days: 5 }).toISO()
+      startTime: DateTime.utc().plus({ days: 2 }).toISO(),
+      completionTime: DateTime.utc().plus({ days: 3 }).toISO()
     };
     const response = await request.post('/api/v1/task').send(body);
 
@@ -58,7 +61,8 @@ describe('POST /v1/task', () => {
           startTime: body.startTime,
           description: expect.any(String),
           dateCreated: expect.stringMatching(ISO_DATE_REGEX),
-          dateUpdated: expect.stringMatching(ISO_DATE_REGEX)
+          dateUpdated: expect.stringMatching(ISO_DATE_REGEX),
+          completionTime: expect.stringMatching(ISO_DATE_REGEX)
         }
       })
     );

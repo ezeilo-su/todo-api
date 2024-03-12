@@ -12,39 +12,49 @@ export enum NotificationSubscription {
   taskStarted = 'taskStarted',
   taskCompleted = 'taskCompleted'
 }
-export const NotificationSubscriptionValidationSchema = z
+
+export const NotifSubValidationSchema = z
   .object({
     reminder: z.boolean().optional(),
     taskStarted: z.boolean().optional(),
     taskCompleted: z.boolean().optional()
   })
+  .refine((data) => Object.values(data).some((value) => value === true), {
+    message: `At least one field in [${Object.keys(NotificationSubscription)}] must be set if notificationSubscription is supplied`
+  });
+
+export const TaskCreateValidationSchema = z
+  .object({
+    title: z.string().min(3).max(64),
+    description: z.string().max(500).optional(),
+    startTime: z
+      .string()
+      .transform((startTime) => DateTime.fromISO(startTime))
+      .refine((startTime) => !startTime || startTime > DateTime.now(), {
+        message: 'startTime must be in the future'
+      })
+      .optional(),
+    completionTime: z
+      .string()
+      .transform((completionTime) => DateTime.fromISO(completionTime))
+      .refine((completionTime) => !completionTime || completionTime > DateTime.now(), {
+        message: 'completionTime must be in the future'
+      })
+      .optional(),
+    priorityLevel: z.nativeEnum(TaskPriority).optional(),
+    notificationSubscription: NotifSubValidationSchema.optional()
+  })
   .refine(
-    (data) => {
-      // Ensure that at least one field is provided
-      return Object.values(data).some((value) => value === true);
-    },
+    (schema) =>
+      !schema.completionTime ||
+      (schema.completionTime > DateTime.now() &&
+        (!schema.startTime || schema.completionTime > schema.startTime)),
     {
-      message:
-        'At least one field in [reminder, taskStarted, taskCompleted] must be true if notificationSubscription is present'
+      message: 'completionTime must be in the future and greater than startTime'
     }
   );
-const optionalDateValidationSchema = z
-  .string()
-  .transform((val) => DateTime.fromISO(val))
-  .optional();
 
-export const TaskCreateValidationSchema = z.object({
-  title: z.string().min(3).max(64),
-  description: z.string().max(500).optional(),
-  startTime: optionalDateValidationSchema,
-  completionTime: optionalDateValidationSchema,
-  priorityLevel: z.nativeEnum(TaskPriority).optional(),
-  notificationSubscription: NotificationSubscriptionValidationSchema.optional()
-});
-
-export type NotificationSubscriptionSchema = z.infer<
-  typeof NotificationSubscriptionValidationSchema
->;
+export type NotificationSubscriptionSchema = z.infer<typeof NotifSubValidationSchema>;
 
 interface ResponseBody<T> {
   success: boolean;
@@ -72,7 +82,7 @@ export const createTaskHandler: RequestHandler<
     });
   } catch (error) {
     // check for error instance and handle properly
-    console.log('error creating task\n', { error });
+    logger.info('error creating task\n' + JSON.stringify(error));
     next(error);
   }
 };
