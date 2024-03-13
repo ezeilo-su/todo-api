@@ -50,6 +50,7 @@ export const TaskCreateValidationSchema = z
       (schema.completionTime > DateTime.now() &&
         (!schema.startTime || schema.completionTime > schema.startTime)),
     {
+      path: ['completionTime'],
       message: 'completionTime must be in the future and greater than startTime'
     }
   );
