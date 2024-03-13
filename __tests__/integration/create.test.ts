@@ -46,7 +46,8 @@ describe('POST /v1/task', () => {
       title: 'Sample Task',
       description: 'Test if task is created',
       startTime: DateTime.utc().plus({ days: 2 }).toISO(),
-      completionTime: DateTime.utc().plus({ days: 3 }).toISO()
+      completionTime: DateTime.utc().plus({ days: 3 }).toISO(),
+      notificationSubscription: { reminder: true },
     };
     const response = await request.post('/api/v1/task').send(body);
 
@@ -60,9 +61,10 @@ describe('POST /v1/task', () => {
           id: expect.any(String),
           startTime: body.startTime,
           description: expect.any(String),
+          notificationSubscription: { reminder: true },
           dateCreated: expect.stringMatching(ISO_DATE_REGEX),
           dateUpdated: expect.stringMatching(ISO_DATE_REGEX),
-          completionTime: expect.stringMatching(ISO_DATE_REGEX)
+          completionTime: expect.stringMatching(ISO_DATE_REGEX),
         }
       })
     );
