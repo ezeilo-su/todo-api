@@ -38,7 +38,6 @@ describe('POST /v1/task', () => {
         message: expect.any(String),
         errors: expect.arrayContaining([
           expect.objectContaining({
-            path: 'body',
             field: expect.any(String),
             message: expect.any(String)
           })
@@ -47,7 +46,7 @@ describe('POST /v1/task', () => {
     );
   });
 
-  it('Should return a 400 for wrong startTime/completionTime pair', async () => {
+  it('Should return a 400 for wrong timeline', async () => {
     const body = {
       title: 'Valid title',
       description: 'Valid description',
@@ -64,7 +63,6 @@ describe('POST /v1/task', () => {
         message: expect.any(String),
         errors: expect.arrayContaining([
           expect.objectContaining({
-            path: 'body',
             field: 'completionTime',
             message: expect.any(String)
           })

@@ -1,6 +1,6 @@
 import { ErrorRequestHandler } from 'express';
 import { CustomErrorCodes } from '../enums';
-import { ValidationIssues, RequestValidationError } from '../errors/error';
+import { ValidationIssues, RequestValidationError, BadRequestError } from '../errors/error';
 import httpStatus from 'http-status';
 
 interface ReqValidationErrorRes {
@@ -24,13 +24,21 @@ export const errorHandler: ErrorRequestHandler<unknown, ErrRes> = (err, _req, re
       case err instanceof RequestValidationError:
         console.error(err.toString(), '\n', JSON.stringify(err));
 
-        const errors = err.toJSON();
-
         res.status(httpStatus.BAD_REQUEST).json({
           success: false,
           message: err.message,
           code: CustomErrorCodes.BAD_REQUEST,
-          errors
+          errors: err.toJSON()
+        });
+        break;
+
+      case err instanceof BadRequestError:
+        console.error(err.toString(), '\n', JSON.stringify(err));
+        res.status(httpStatus.BAD_REQUEST).json({
+          success: false,
+          message: err.message,
+          code: CustomErrorCodes.BAD_REQUEST,
+          errors: err.toJSON()
         });
         break;
 

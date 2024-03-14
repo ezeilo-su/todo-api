@@ -1,8 +1,8 @@
-import { MongooseError } from 'mongoose';
 import { ZodIssue } from 'zod';
+import { MongooseError } from 'mongoose';
 
 export interface BadIssue {
-  path: string;
+  path?: string;
   field: string;
   message: string;
 }
@@ -44,6 +44,19 @@ export class RequestValidationError extends AppError implements Stringifiable<Va
   }
 }
 
+export class BadRequestError extends AppError implements Stringifiable<BadIssue[]> {
+  constructor(private issues: BadIssue[]) {
+    super('Bad request');
+  }
+
+  toJSON(): BadIssue[] {
+    return this.issues;
+  }
+
+  toString(): string {
+    return this.message;
+  }
+}
 export class DatabaseError extends MongooseError {
   constructor(message: string) {
     super(message);
