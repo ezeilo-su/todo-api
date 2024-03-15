@@ -60,23 +60,42 @@ export class TaskRepository {
     this.taskModel = model<TaskModel>('Task', taskSchema);
   }
 
+  private mapToModel(data: CreateTaskDto) {
+    return Object.entries(data).reduce(
+      (acc, [key, val]) => {
+        if (key === 'priorityLevel') {
+          val = TaskPriorityMapping[val as TaskPriority];
+        }
+
+        acc[key] = val;
+        return acc;
+      },
+      {} as { [key: string]: any }
+    );
+  }
+
+  private mapToResult(newTask: TaskModel) {
+    const { __v, createdAt, updatedAt, priorityLevel, ...data } = newTask;
+
+    return {
+      ...data,
+      dateCreated: createdAt,
+      dateUpdated: updatedAt,
+      ...(priorityLevel && { priorityLevel: TaskPriorityReverseMapping[priorityLevel] })
+    };
+  }
+
   async createTask(data: CreateTaskDto): Promise<Result> {
     try {
-      const { _id, __v, createdAt, updatedAt, priorityLevel, ...newTask } = (
+      const { _id, ...newTask } = (
         await this.taskModel.create({
-          ...data,
-          ...(data.priorityLevel && { priorityLevel: TaskPriorityMapping[data.priorityLevel] })
+          ...this.mapToModel(data)
         })
       ).toObject();
 
       return {
         kind: 'ok',
-        data: {
-          ...newTask,
-          dateCreated: createdAt,
-          dateUpdated: updatedAt,
-          ...(priorityLevel && { priorityLevel: TaskPriorityReverseMapping[priorityLevel] })
-        }
+        data: this.mapToResult(newTask)
       };
     } catch (error) {
       return {
