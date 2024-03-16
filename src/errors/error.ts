@@ -44,19 +44,36 @@ export class RequestValidationError extends AppError implements Stringifiable<Va
   }
 }
 
-export class BadRequestError extends AppError implements Stringifiable<BadIssue[]> {
-  constructor(private issues: BadIssue[]) {
-    super('Bad request');
+export class TaskTimelineError extends AppError implements Stringifiable<string[]> {
+  constructor(path: string) {
+    super(`${path} error`);
   }
 
-  toJSON(): BadIssue[] {
-    return this.issues;
+  toJSON() {
+    return ['completionTime must be in the future of startTime'];
   }
 
   toString(): string {
     return this.message;
   }
 }
+
+export class TaskStartFinishTimeError extends AppError implements Stringifiable<string[]> {
+  private path: string;
+  constructor(path: string) {
+    super(`${path} error`);
+    this.path = path;
+  }
+
+  toJSON() {
+    return [`${this.path} must be in the future`];
+  }
+
+  toString(): string {
+    return this.message;
+  }
+}
+
 export class DatabaseError extends MongooseError {
   constructor(message: string) {
     super(message);

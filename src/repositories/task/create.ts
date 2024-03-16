@@ -98,10 +98,8 @@ export class TaskRepository {
         data: this.mapToResult(newTask)
       };
     } catch (error) {
-      return {
-        kind: 'error',
-        err: error as Error
-      };
+      // handle known DB errors here before throw
+      throw error;
     }
   }
 }

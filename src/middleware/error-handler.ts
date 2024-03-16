@@ -1,22 +1,34 @@
 import { ErrorRequestHandler } from 'express';
 import { CustomErrorCodes } from '../enums';
-import { ValidationIssues, RequestValidationError, BadRequestError } from '../errors/error';
+import {
+  ValidationIssues,
+  RequestValidationError,
+  TaskStartFinishTimeError,
+  TaskTimelineError
+} from '../errors/error';
 import httpStatus from 'http-status';
 
-interface ReqValidationErrorRes {
+interface ReqValidationErrRes {
   success: false;
   message: string;
   code: CustomErrorCodes.BAD_REQUEST;
   errors: ValidationIssues;
 }
 
-interface ServerErrorRes {
+interface ServerErrRes {
   success: false;
   message: string;
   code: CustomErrorCodes.SERVER_ERROR;
 }
 
-type ErrRes = ReqValidationErrorRes | ServerErrorRes;
+interface ReqNotProcessedErrRes {
+  success: false;
+  message: string;
+  code: CustomErrorCodes.NOT_PROCESSED;
+  errors: string[];
+}
+
+type ErrRes = ReqValidationErrRes | ServerErrRes | ReqNotProcessedErrRes;
 
 export const errorHandler: ErrorRequestHandler<unknown, ErrRes> = (err, _req, res, _next) => {
   try {
@@ -32,12 +44,12 @@ export const errorHandler: ErrorRequestHandler<unknown, ErrRes> = (err, _req, re
         });
         break;
 
-      case err instanceof BadRequestError:
+      case err instanceof TaskTimelineError || err instanceof TaskStartFinishTimeError:
         console.error(err.toString(), '\n', JSON.stringify(err));
-        res.status(httpStatus.BAD_REQUEST).json({
+        res.status(httpStatus.CONFLICT).json({
           success: false,
           message: err.message,
-          code: CustomErrorCodes.BAD_REQUEST,
+          code: CustomErrorCodes.NOT_PROCESSED,
           errors: err.toJSON()
         });
         break;
