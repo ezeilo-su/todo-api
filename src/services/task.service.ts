@@ -28,7 +28,7 @@ export class TaskService {
       throw new TaskStartFinishTimeError('startTime');
     }
     if (completionTime && completionTime < curTime) {
-      throw new TaskStartFinishTimeError('startTime');
+      throw new TaskStartFinishTimeError('completionTime');
     }
     if (startTime && completionTime) {
       if (completionTime <= startTime) {

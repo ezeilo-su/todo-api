@@ -26,8 +26,8 @@ describe('POST /v1/task', () => {
       title: 2,
       description: 345,
       notificationSubscription: {},
-      startTime: DateTime.utc().minus({ days: 1 }).toISO(),
-      completionTime: DateTime.utc().minus({ days: 3 }).toISO()
+      startTime: {},
+      completionTime: {}
     };
     const response = await request.post('/api/v1/task').send(body);
 
@@ -38,6 +38,7 @@ describe('POST /v1/task', () => {
         message: expect.any(String),
         errors: expect.arrayContaining([
           expect.objectContaining({
+            path: 'body',
             field: expect.any(String),
             message: expect.any(String)
           })
@@ -46,7 +47,47 @@ describe('POST /v1/task', () => {
     );
   });
 
-  it('Should return a 400 for wrong timeline', async () => {
+  it('Should return a 409  when startTime is a past date', async () => {
+    const body = {
+      title: 'Valid title',
+      description: 'Valid description',
+      notificationSubscription: { reminder: true, taskStarted: true, taskCompleted: true },
+      startTime: DateTime.utc().minus({ days: 2 }).toISO() //  date in the past
+    };
+    const response = await request.post('/api/v1/task').send(body);
+
+    expect(response.status).toEqual(httpStatus.CONFLICT);
+    expect(response.body).toStrictEqual(
+      expect.objectContaining({
+        success: false,
+        message: expect.any(String),
+        errors: expect.arrayContaining([expect.any(String)])
+      })
+    );
+    expect(response.body.errors[0].includes('startTime')).toBe(true);
+  });
+
+  it('Should return a 409 when completionTime is a past date', async () => {
+    const body = {
+      title: 'Valid title',
+      description: 'Valid description',
+      notificationSubscription: { reminder: true, taskStarted: true, taskCompleted: true },
+      completionTime: DateTime.utc().minus({ days: 1 }).toISO()
+    };
+    const response = await request.post('/api/v1/task').send(body);
+
+    expect(response.status).toEqual(httpStatus.CONFLICT);
+    expect(response.body).toStrictEqual(
+      expect.objectContaining({
+        success: false,
+        message: expect.any(String),
+        errors: expect.arrayContaining([expect.any(String)])
+      })
+    );
+    expect(response.body.errors[0].includes('completionTime')).toBe(true);
+  });
+
+  it('Should return a 409 for wrong timeline', async () => {
     const body = {
       title: 'Valid title',
       description: 'Valid description',
@@ -56,17 +97,12 @@ describe('POST /v1/task', () => {
     };
     const response = await request.post('/api/v1/task').send(body);
 
-    expect(response.status).toEqual(httpStatus.BAD_REQUEST);
+    expect(response.status).toEqual(httpStatus.CONFLICT);
     expect(response.body).toStrictEqual(
       expect.objectContaining({
         success: false,
         message: expect.any(String),
-        errors: expect.arrayContaining([
-          expect.objectContaining({
-            field: 'completionTime',
-            message: expect.any(String)
-          })
-        ])
+        errors: expect.arrayContaining([expect.any(String)])
       })
     );
   });

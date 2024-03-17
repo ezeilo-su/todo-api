@@ -2,7 +2,7 @@ import { ZodIssue } from 'zod';
 import { MongooseError } from 'mongoose';
 
 export interface BadIssue {
-  path?: string;
+  path: string;
   field: string;
   message: string;
 }
