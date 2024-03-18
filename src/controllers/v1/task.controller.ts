@@ -2,10 +2,11 @@ import { z } from 'zod';
 import { DateTime } from 'luxon';
 import { RequestHandler } from 'express';
 
-import { Task, TaskPriority } from '../../../repositories/task/create';
-import { TaskService } from '../../../services/task.service';
+import { Task, TaskPriority } from '../../repositories/task/create';
+import { TaskService } from '../../services/task.service';
 import httpStatus from 'http-status';
-import { logger } from '../../../logger/logger';
+import { logger } from '../../logger/logger';
+import { RequestValidationError } from '../../errors/error';
 
 export enum NotificationSubscription {
   reminder = 'reminder',
@@ -47,25 +48,33 @@ interface ResponseBody<T> {
 
 export type TaskCreatePayload = z.infer<typeof TaskCreateValidationSchema>;
 
-export const createTaskHandler: RequestHandler<
-  unknown,
-  ResponseBody<Task>,
-  TaskCreatePayload
-> = async (req, res, next) => {
-  try {
-    const taskService = new TaskService();
+export class TaskController {
+  constructor(private service = new TaskService()) {}
 
-    const newTask = await taskService.createTask(req.body);
-    logger.info(JSON.stringify(newTask));
+  createTaskHandler: RequestHandler<unknown, ResponseBody<Task>> = async (req, res, next) => {
+    try {
+      const validatedPayload = this.validateCreate(req.body);
+      const newTask = await this.service.createTask(validatedPayload);
+      logger.info(JSON.stringify(newTask));
 
-    res.status(httpStatus.CREATED).json({
-      success: true,
-      message: 'Task successfully created',
-      data: newTask
-    });
-  } catch (error) {
-    // check for error instance and handle properly
-    logger.info('error creating task\n' + JSON.stringify(error));
-    next(error);
+      res.status(httpStatus.CREATED).json({
+        success: true,
+        message: 'Task successfully created',
+        data: newTask
+      });
+    } catch (error) {
+      // check for error instance and handle properly
+      logger.info('error creating task\n' + JSON.stringify(error));
+      next(error);
+    }
+  };
+
+  private validateCreate(body: any) {
+    const result = TaskCreateValidationSchema.safeParse(body);
+    if (!result.success) {
+      throw new RequestValidationError('body', result.error.issues);
+    }
+
+    return result.data;
   }
-};
+}

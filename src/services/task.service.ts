@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 
 import { taskSchema } from '../models/task.model';
-import { TaskCreatePayload } from '../controllers/v1/task/create.controller';
+import { TaskCreatePayload } from '../controllers/v1/task.controller';
 import { CreateTaskDto, TaskRepository } from '../repositories/task/create';
 import { TaskStartFinishTimeError, TaskTimelineError } from '../errors/error';
 

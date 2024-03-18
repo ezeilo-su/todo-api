@@ -1,12 +1,10 @@
 import { Router } from 'express';
-import { validateRequest } from '../../middleware/request-validator';
-import {
-  TaskCreateValidationSchema,
-  createTaskHandler
-} from '../../controllers/v1/task/create.controller';
+import { TaskController } from '../../controllers/v1/task.controller';
+import { TaskService } from '../../services/task.service';
 
 const taskRoute = Router();
+const taskController = new TaskController(new TaskService());
 
-taskRoute.post('/', validateRequest('body', TaskCreateValidationSchema), createTaskHandler);
+taskRoute.post('/', taskController.createTaskHandler);
 
 export { taskRoute };
