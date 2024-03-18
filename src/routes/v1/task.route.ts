@@ -5,6 +5,6 @@ import { TaskService } from '../../services/task.service';
 const taskRoute = Router();
 const taskController = new TaskController(TaskService);
 
-taskRoute.post('/', taskController.createTaskHandler);
+taskRoute.post('/', taskController.create);
 
 export { taskRoute };

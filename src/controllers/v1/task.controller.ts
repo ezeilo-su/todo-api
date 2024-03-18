@@ -54,7 +54,7 @@ export class TaskController {
     this.taskService = new taskService();
   }
 
-  createTaskHandler: RequestHandler<unknown, ResponseBody<Task>> = async (req, res, next) => {
+  create: RequestHandler<unknown, ResponseBody<Task>> = async (req, res, next) => {
     try {
       const validatedPayload = this.validateCreate(req.body);
       const newTask = await this.taskService.createTask(validatedPayload);
