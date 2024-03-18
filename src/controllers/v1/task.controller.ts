@@ -49,12 +49,15 @@ interface ResponseBody<T> {
 export type TaskCreatePayload = z.infer<typeof TaskCreateValidationSchema>;
 
 export class TaskController {
-  constructor(private service = new TaskService()) {}
+  private taskService: TaskService;
+  constructor(taskService = TaskService) {
+    this.taskService = new taskService();
+  }
 
   createTaskHandler: RequestHandler<unknown, ResponseBody<Task>> = async (req, res, next) => {
     try {
       const validatedPayload = this.validateCreate(req.body);
-      const newTask = await this.service.createTask(validatedPayload);
+      const newTask = await this.taskService.createTask(validatedPayload);
       logger.info(JSON.stringify(newTask));
 
       res.status(httpStatus.CREATED).json({

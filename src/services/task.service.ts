@@ -6,13 +6,15 @@ import { CreateTaskDto, TaskRepository } from '../repositories/task/create';
 import { TaskStartFinishTimeError, TaskTimelineError } from '../errors/error';
 
 export class TaskService {
+  private taskRepository: TaskRepository;
+  constructor(taskRepo = TaskRepository, schema = taskSchema) {
+    this.taskRepository = new taskRepo(schema);
+  }
   async createTask(data: TaskCreatePayload) {
-    const taskRepo = new TaskRepository(taskSchema);
-
     const { startTime, completionTime } = data;
     this.validateTimeline({ startTime, completionTime });
 
-    const newTask = await taskRepo.createTask(this.mapTaskObject(data));
+    const newTask = await this.taskRepository.createTask(this.mapTaskObject(data));
 
     if (newTask.kind === 'ok') {
       return newTask.data;
