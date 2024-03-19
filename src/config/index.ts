@@ -8,13 +8,12 @@ export const DBConfigValidationSchema = z.object({
   url: z.string().url()
 });
 
-const PORT_REGEX = /^(?:[1-9]\d{0,3}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$/;
-const validatePort = (port: string) => {
-  if (!PORT_REGEX.test(port)) {
-    throw new Error('Invalid PORT number');
+const validatePort = (port: number) => {
+  if (port < 1024 || port > 49152) {
+    throw 'invalid port range';
   }
 
-  return Number(port);
+  return port;
 };
 
 export const ConfigValidationSchema = z.object({
@@ -27,7 +26,10 @@ export const ConfigValidationSchema = z.object({
 
     return result.data;
   }),
-  serverPort: z.string().transform((port) => validatePort(port)),
+  serverPort: z
+    .string()
+    .regex(/^\d+$/)
+    .transform((port) => validatePort(Number(port))),
   lastCommitHash: z.string(),
   logLevel: z.string()
 });
