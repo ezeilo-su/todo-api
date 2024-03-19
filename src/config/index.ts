@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import dotenv from 'dotenv';
 import { getCommitHash } from '../utils/utils';
-// import { ConfigValidationSchema } from '../validation-schema';
 
 dotenv.config();
 export const DBConfigValidationSchema = z.object({
