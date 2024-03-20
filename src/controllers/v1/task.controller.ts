@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { DateTime } from 'luxon';
 import { RequestHandler } from 'express';
 
-import { Task, TaskPriority } from '../../repositories/task/create';
+import { Task, TaskPriority } from '../../repositories/task';
 import { TaskService } from '../../services/task.service';
 import httpStatus from 'http-status';
 import { logger } from '../../logger/logger';

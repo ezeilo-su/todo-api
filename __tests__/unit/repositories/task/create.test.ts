@@ -1,11 +1,7 @@
 import { DateTime } from 'luxon';
 
 import { taskSchema } from '../../../../src/models/task.model';
-import {
-  CreateTaskDto,
-  TaskPriority,
-  TaskRepository
-} from '../../../../src/repositories/task/create';
+import { CreateTaskDto, TaskPriority, TaskRepository } from '../../../../src/repositories/task';
 
 describe('create task => TaskRepository.create', () => {
   it('should save a new task with and return the correct fields', async () => {
