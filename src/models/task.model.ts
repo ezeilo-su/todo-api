@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose';
-import { TaskPriorityMapping } from '../repositories/task/create';
+import { TaskPriorityMapping } from '../repositories/mongoose/task';
 import { generateId } from '../utils/utils';
 
 interface NotificationSubscriptionSchema {

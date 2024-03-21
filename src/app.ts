@@ -12,9 +12,8 @@ app.use(json());
 app.use(urlencoded({ extended: true }));
 
 app.use(morgan('tiny', { stream: logStream }));
+// other middleware go here
 
 bindRoutes(app);
-
-// other middleware go here
 
 export { app };

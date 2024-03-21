@@ -1,11 +1,36 @@
 import { z } from 'zod';
 import dotenv from 'dotenv';
 import { getCommitHash } from '../utils/utils';
-import { ConfigValidationSchema } from '../validation-schema';
 
 dotenv.config();
 export const DBConfigValidationSchema = z.object({
   url: z.string().url()
+});
+
+const validatePort = (port: number) => {
+  if (port < 1024 || port > 49152) {
+    throw 'invalid port range';
+  }
+
+  return port;
+};
+
+export const ConfigValidationSchema = z.object({
+  appEnv: z.string(),
+  dbConfig: z.string().transform((val) => {
+    const result = DBConfigValidationSchema.safeParse(JSON.parse(val));
+    if (!result.success) {
+      throw 'invalid DB configs';
+    }
+
+    return result.data;
+  }),
+  serverPort: z
+    .string()
+    .regex(/^\d+$/)
+    .transform((port) => validatePort(Number(port))),
+  lastCommitHash: z.string(),
+  logLevel: z.string()
 });
 
 export enum AppEnv {

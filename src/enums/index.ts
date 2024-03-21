@@ -1,0 +1,5 @@
+export enum CustomErrorCodes {
+  BAD_REQUEST = 'BAD_REQUEST',
+  NOT_PROCESSED = 'NOT_PROCESSED',
+  SERVER_ERROR = 'SERVER_ERROR'
+}

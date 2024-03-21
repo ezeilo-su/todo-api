@@ -1,6 +1,6 @@
 import { Model, Schema, model } from 'mongoose';
 import { TaskModel } from '../../models/task.model';
-import { NotificationSubscriptionSchema } from '../../validation-schema';
+import { NotificationSubscriptionSchema } from '../../controllers/v1/task.controller';
 
 export interface Task {
   id: string;
@@ -41,6 +41,18 @@ export interface CreateTaskDto {
   notificationSubscription?: NotificationSubscriptionSchema;
 }
 
+interface Err {
+  kind: 'error';
+  err: Error;
+}
+
+interface Ok {
+  kind: 'ok';
+  data: Task;
+}
+
+type Result = Err | Ok;
+
 export class TaskRepository {
   private readonly taskModel: Model<TaskModel>;
 
@@ -48,19 +60,46 @@ export class TaskRepository {
     this.taskModel = model<TaskModel>('Task', taskSchema);
   }
 
-  async createTask(data: CreateTaskDto): Promise<Task> {
-    const { _id, __v, createdAt, updatedAt, priorityLevel, ...newTask } = (
-      await this.taskModel.create({
-        ...data,
-        ...(data.priorityLevel && { priorityLevel: TaskPriorityMapping[data.priorityLevel] })
-      })
-    ).toObject();
+  private mapToModel(data: CreateTaskDto) {
+    return Object.entries(data).reduce(
+      (acc, [key, val]) => {
+        if (key === 'priorityLevel') {
+          val = TaskPriorityMapping[val as TaskPriority];
+        }
+
+        acc[key] = val;
+        return acc;
+      },
+      {} as { [key: string]: any }
+    );
+  }
+
+  private mapToResult(newTask: TaskModel) {
+    const { __v, createdAt, updatedAt, priorityLevel, ...data } = newTask;
 
     return {
-      ...newTask,
+      ...data,
       dateCreated: createdAt,
       dateUpdated: updatedAt,
       ...(priorityLevel && { priorityLevel: TaskPriorityReverseMapping[priorityLevel] })
     };
+  }
+
+  async createTask(data: CreateTaskDto): Promise<Result> {
+    try {
+      const { _id, ...newTask } = (
+        await this.taskModel.create({
+          ...this.mapToModel(data)
+        })
+      ).toObject();
+
+      return {
+        kind: 'ok',
+        data: this.mapToResult(newTask)
+      };
+    } catch (error) {
+      // handle known DB errors here before throw
+      throw error;
+    }
   }
 }
