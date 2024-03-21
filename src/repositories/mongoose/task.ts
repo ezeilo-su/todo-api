@@ -1,6 +1,6 @@
 import { Model, Schema, model } from 'mongoose';
-import { TaskModel } from '../models/task.model';
-import { NotificationSubscriptionSchema } from '../controllers/v1/task.controller';
+import { TaskModel } from '../../models/task.model';
+import { NotificationSubscriptionSchema } from '../../controllers/v1/task.controller';
 
 export interface Task {
   id: string;
