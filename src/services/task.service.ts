@@ -6,7 +6,7 @@ import { CreateTaskDto, TaskRepository } from '../repositories/mongoose/task';
 import { TaskStartFinishTimeError, TaskTimelineError } from '../errors/error';
 
 export class TaskService {
-  private taskRepository: TaskRepository;
+  private readonly taskRepository: TaskRepository;
   constructor(taskRepo = TaskRepository, schema = taskSchema) {
     this.taskRepository = new taskRepo(schema);
   }
