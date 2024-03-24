@@ -99,7 +99,10 @@ export class TaskRepository {
       };
     } catch (error) {
       // handle known DB errors here before throw
-      throw error;
+      return {
+        kind: 'error',
+        err: error as Error
+      }
     }
   }
 }
