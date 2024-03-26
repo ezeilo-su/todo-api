@@ -5,7 +5,7 @@ import {
   CreateTaskDto,
   TaskPriority,
   TaskRepository
-} from '../../../../src/repositories/mongoose/task';
+} from '../../../../src/repositories/orm/task';
 
 describe('create task => TaskRepository.create', () => {
   it('should save a new task with and return the correct fields', async () => {

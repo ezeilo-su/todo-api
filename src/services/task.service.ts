@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 
 import { taskSchema } from '../models/task.model';
 import { TaskCreatePayload } from '../controllers/v1/task.controller';
-import { CreateTaskDto, TaskRepository } from '../repositories/mongoose/task';
+import { CreateTaskDto, TaskRepository } from '../repositories/orm/task';
 import { TaskStartFinishTimeError, TaskTimelineError } from '../errors/error';
 
 export class TaskService {
